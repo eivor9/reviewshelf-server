@@ -11,26 +11,35 @@ app.use(express.json()); // Parse incoming JSON
 
 // ROUTES
 app.get("/", (req, res) => {
-  res.send("Hello, world!");
+  res.json({
+    message: "WELCOME TO REVIEW SHELF",
+    books: {
+      getAllBooks: '/books',
+      createOneBook: '/books',
+      getOneBook: '/books/:id',
+      editOneBook: '/books/:id',
+      deleteOneBook: '/books/:id'
+    },
+    reviews: {
+      getAllReviews: '/books/:id/reviews',
+      createOneReview: '/books/:id/reviews',
+      getOneReview: '/books/:id/reviews/:reviewer',
+      editOneBook: '/books/:id/reviews/:reviewer',
+      deleteOneBook: '/books/:id/reviews/:reviewer'
+    }
+  });
 });
 
-/////////////////////////////////////
-// REMOVE AFTER SUCCESSFUL DEPLOYMENT
-/////////////////////////////////////
-const db = require("./db/dbConfig.js");
+const booksController = require("./controllers/booksController.js");
+app.use("/books", booksController);
 
-app.get("/test", async (req, res) => {
-  try {
-    const allDays = await db.any("SELECT * FROM test");
-    res.json(allDays);
-  } catch (err) {
-    res.json(err);
-  }
+const reviewsController = require("./controllers/reviewsController.js");
+app.use("/reviews", reviewsController);
+
+// 404 PAGE
+app.get("*", (req, res) => {
+  res.status(404).send("Page not found");
 });
-
-/////////////////////////////////////
-// REMOVE AFTER SUCCESSFUL DEPLOYMENT
-/////////////////////////////////////
 
 // EXPORT
 module.exports = app;
